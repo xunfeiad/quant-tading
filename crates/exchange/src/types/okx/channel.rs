@@ -8,6 +8,7 @@ pub enum Channel {
     IndexCandle(IndexCandle),
     SpreadChannel(SpreadChannel),
     SpreadCandle(SpreadCandle),
+    Candle(Candle),
 }
 
 impl Channel {
@@ -29,7 +30,8 @@ impl Channel {
             Channel::MarkPriceCandle(_)
             | Channel::IndexCandle(_)
             | Channel::SpreadChannel(_)
-            | Channel::SpreadCandle(_) => ChannelType::Business,
+            | Channel::SpreadCandle(_)
+            | Channel::Candle(_) => ChannelType::Business,
         }
     }
 
@@ -245,4 +247,65 @@ pub enum SpreadCandle {
     SprdCandle12HUtc,
     #[serde(rename = "sprd-candle6Hutc")]
     SprdCandle6HUtc,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Candle {
+    // 常规时间频道
+    #[serde(rename = "candle3M")]
+    Candle3M,
+    #[serde(rename = "candle1M")]
+    Candle1M,
+    #[serde(rename = "candle1W")]
+    Candle1W,
+    #[serde(rename = "candle1D")]
+    Candle1D,
+    #[serde(rename = "candle2D")]
+    Candle2D,
+    #[serde(rename = "candle3D")]
+    Candle3D,
+    #[serde(rename = "candle5D")]
+    Candle5D,
+    #[serde(rename = "candle12H")]
+    Candle12H,
+    #[serde(rename = "candle6H")]
+    Candle6H,
+    #[serde(rename = "candle4H")]
+    Candle4H,
+    #[serde(rename = "candle2H")]
+    Candle2H,
+    #[serde(rename = "candle1H")]
+    Candle1H,
+    #[serde(rename = "candle30m")]
+    Candle30m,
+    #[serde(rename = "candle15m")]
+    Candle15m,
+    #[serde(rename = "candle5m")]
+    Candle5m,
+    #[serde(rename = "candle3m")]
+    Candle3m,
+    #[serde(rename = "candle1m")]
+    Candle1m,
+    #[serde(rename = "candle1s")]
+    Candle1s,
+
+    // UTC时间频道
+    #[serde(rename = "candle3Mutc")]
+    Candle3MUtc,
+    #[serde(rename = "candle1Mutc")]
+    Candle1MUtc,
+    #[serde(rename = "candle1Wutc")]
+    Candle1WUtc,
+    #[serde(rename = "candle1Dutc")]
+    Candle1DUtc,
+    #[serde(rename = "candle2Dutc")]
+    Candle2DUtc,
+    #[serde(rename = "candle3Dutc")]
+    Candle3DUtc,
+    #[serde(rename = "candle5Dutc")]
+    Candle5DUtc,
+    #[serde(rename = "candle12Hutc")]
+    Candle12HUtc,
+    #[serde(rename = "candle6Hutc")]
+    Candle6HUtc,
 }

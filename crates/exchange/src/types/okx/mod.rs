@@ -88,6 +88,16 @@ impl Args {
             sprd_id: Some(sprd_id),
         }
     }
+
+    pub fn new_candle_channel(candle: channel::Candle, inst_id: String) -> Self {
+        Self {
+            channel: Channel::Candle(candle),
+            inst_type: None,
+            inst_family: None,
+            inst_id: Some(inst_id),
+            sprd_id: None,
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

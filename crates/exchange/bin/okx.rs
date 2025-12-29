@@ -2,7 +2,7 @@ use exchange::{
     Credential,
     types::okx::{
         Args,
-        channel::{MarkPriceCandle, SpreadCandle, SpreadChannel},
+        channel::{Candle, MarkPriceCandle, SpreadCandle, SpreadChannel},
     },
 };
 #[tokio::main]
@@ -19,6 +19,7 @@ async fn main() {
             SpreadCandle::SprdCandle1m,
             "SOL-USDT_SOL-USDT-SWAP".to_string(),
         ),
+        Args::new_candle_channel(Candle::Candle1M, "SOL-USDT_SOL-USDT-SWAP".to_string()),
     ];
     let base_url = "wss://ws.okx.com:8443".to_string();
 

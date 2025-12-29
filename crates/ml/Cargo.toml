@@ -1,0 +1,49 @@
+[package]
+name = "ml"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Numerical computing
+ndarray = { version = "0.16", features = ["serde"] }
+ndarray-stats = "0.6"
+ndarray-rand = "0.15"
+ndarray-linalg = { version = "0.16", features = ["openblas-static"] }
+
+# Machine Learning
+smartcore = { version = "0.3", features = ["serde"] }
+linfa = "0.7"
+linfa-trees = "0.7"
+linfa-linear = "0.7"
+linfa-reduction = "0.7"
+
+# Deep Learning - Using tch-rs (PyTorch bindings for Rust)
+tch = "0.16"
+
+# Data processing
+polars = { version = "0.44", features = ["lazy", "temporal", "dtype-datetime"] }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+bincode = "1.3"
+
+# Error handling
+thiserror = { workspace = true }
+anyhow = "1.0"
+
+# Async runtime
+tokio = { workspace = true }
+async-trait = { workspace = true }
+
+# Utilities
+chrono = { workspace = true }
+tracing = { workspace = true }
+rand = "0.8"
+rayon = "1.10"
+
+# Statistics
+statrs = "0.17"
+
+[dev-dependencies]
+approx = "0.5"

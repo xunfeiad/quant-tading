@@ -1,0 +1,28 @@
+[package]
+name = "exchange"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+async-trait.workspace = true
+hex = "0.4.3"
+hmac = "0.12.1"
+reqwest.workspace = true
+serde.workspace = true
+sha2 = "0.10.9"
+serde_json.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+base64 = "0.22.1"
+rand = "0.9.2"
+tokio-tungstenite = {version = "0.27.0", features = ["native-tls"]}
+tokio = { workspace = true, features = ["full"] }
+futures-util.workspace = true
+flume.workspace = true
+bytes.workspace = true
+tracing-subscriber.workspace = true
+
+
+[[bin]]
+name = "okx"
+path = "bin/okx.rs"

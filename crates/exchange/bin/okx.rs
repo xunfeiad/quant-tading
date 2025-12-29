@@ -14,6 +14,7 @@ async fn main() {
             SpreadChannel::SprdBooksL2Tbt,
             "SOL-USDT_SOL-USDT-SWAP".to_string(),
         ),
+        Args::new_spread_ticker_channel("SOL-USDT_SOL-USDT-SWAP".to_string()),
     ];
     let base_url = "wss://ws.okx.com:8443".to_string();
 

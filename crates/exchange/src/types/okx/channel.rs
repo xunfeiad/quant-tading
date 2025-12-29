@@ -35,7 +35,7 @@ impl Channel {
         match self.channel_type() {
             ChannelType::Business => base_url + "/ws/v5/business",
             ChannelType::Private => base_url + "/ws/v5/private",
-            ChannelType::Public => base_url + "/ws/v5/public"
+            ChannelType::Public => base_url + "/ws/v5/public",
         }
     }
 }

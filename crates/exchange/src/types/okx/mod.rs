@@ -1,6 +1,7 @@
 pub mod channel;
 use channel::Channel;
 use serde::{Deserialize, Serialize};
+use tracing::span;
 
 use crate::types::okx::channel::MarkPriceCandle;
 
@@ -58,6 +59,16 @@ impl Args {
     pub fn new_spread_channel(channel: channel::SpreadChannel, sprd_id: String) -> Self {
         Self {
             channel: Channel::SpreadChannel(channel),
+            inst_type: None,
+            inst_family: None,
+            inst_id: None,
+            sprd_id: Some(sprd_id),
+        }
+    }
+
+    pub fn new_spread_ticker_channel(sprd_id: String) -> Self {
+        Self {
+            channel: Channel::CommonChannel(channel::CommonChannel::SprdPublicTrades),
             inst_type: None,
             inst_family: None,
             inst_id: None,

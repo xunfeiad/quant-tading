@@ -1,17 +1,14 @@
 use exchange::{
     Credential,
-    types::okx::{Args, channel::Channel},
+    types::okx::{Args, channel::{MarkPriceCandle}},
 };
 #[tokio::main]
 async fn main() {
-    let args = vec![Args {
-        channel: Channel::MarkPriceCandle(
-            exchange::types::okx::channel::MarkPriceCandle::MarkPriceCandle12H,
-        ),
-        inst_id: "SOL-USD-SWAP".to_string(),
-        inst_type: None,
-        inst_family: None,
-    }];
+    let args = vec![
+        Args::new_mark_price(MarkPriceCandle::MarkPriceCandle12H, "SOL-USD-SWAP".to_string()),
+        Args::new_sprd_public_trades("SOL-USDT_SOL-USDT-SWAP".to_string())
+
+    ];
     let base_url = "wss://ws.okx.com:8443".to_string();
 
     let credential = Credential {

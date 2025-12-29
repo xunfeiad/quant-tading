@@ -33,7 +33,14 @@ impl Channel {
 
     pub fn channel_url(&self, base_url: String) -> String {
         match self {
-            Channel::CommonChannel(_) => base_url + "/ws/v5/public",
+            Channel::CommonChannel(common_channel) =>{
+                match common_channel{
+                    CommonChannel::SprdPublicTrades => {
+                        base_url + "/ws/v5/business"
+                    },
+                    _ => base_url + "/ws/v5/business"
+                }
+            },
             Channel::MarkPriceCandle(_) => base_url + "/ws/v5/business",
             Channel::IndexCandle(_) => base_url + "/ws/v5/business",
         }

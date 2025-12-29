@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::types::okx::channel::ChannelType;
-use crate::types::okx::{RequestMessage, ResponseMessage};
+use crate::types::okx::{Args, RequestMessage, ResponseMessage};
 use crate::{
     Credential, ExchangeError, ExchangeResult, ExchangeTrait, SubscribeChannel,
     types::okx::{LoginArgs, Operation, channel::Channel},
@@ -23,7 +23,7 @@ pub type ChannelWsStream = HashMap<ChannelType, WsStream>;
 pub struct Okx {
     pub credential: Credential,
     /// The channel need to subscribe
-    pub subscribe_channel: Vec<Channel>,
+    pub args: Vec<Args>,
     /// Channel's ws connection
     pub ws_streams: ChannelWsStream,
     /// Sender
@@ -31,13 +31,13 @@ pub struct Okx {
 }
 
 impl Okx {
-    fn group_channel_by_channel_type(&self) -> HashMap<ChannelType, Vec<Channel>> {
-        let mut channel_mapping: HashMap<ChannelType, Vec<Channel>> = HashMap::new();
-        for channel in self.subscribe_channel.clone().into_iter() {
+    fn group_channel_by_channel_type(&self) -> HashMap<ChannelType, Vec<Args>> {
+        let mut channel_mapping: HashMap<ChannelType, Vec<Args>> = HashMap::new();
+        for arg in self.args.clone().into_iter() {
             channel_mapping
-                .entry(channel.channel_type())
+                .entry(arg.channel.channel_type())
                 .or_insert_with(Vec::new)
-                .push(channel.clone());
+                .push(arg.clone());
         }
         channel_mapping
     }
@@ -46,7 +46,8 @@ impl Okx {
         mut ws_stream: WsStream,
         sender: Sender<ResponseMessage>,
     ) -> ExchangeResult<()> {
-        let resp = match ws_stream.next().await {
+        let (mut ws_writer, mut ws_reader) = ws_stream.split();
+        let resp = match ws_reader.next().await {
             Some(Ok(message)) => {
                 match message {
                     Message::Text(text) => serde_json::from_str(&text).map_err(|e| {
@@ -64,7 +65,7 @@ impl Okx {
                     Message::Ping(_) => {
                         debug!("Received ping, sending pong");
                         // 对于ping消息，我们直接返回一个pong响应
-                        ws_stream.send(Message::Pong(Bytes::new())).await?;
+                        ws_writer.send(Message::Pong(Bytes::new())).await?;
                         Ok(ResponseMessage {
                             event: Some(Operation::Pong),
                             code: Some("0".to_string()),
@@ -93,7 +94,7 @@ impl SubscribeChannel for Okx {
         "Okx".to_string()
     }
     async fn subscribe_all(&mut self) -> ExchangeResult<()> {
-        let need_login = self.subscribe_channel.iter().any(|channel| channel.need_auth());
+        let need_login = self.args.iter().any(|arg| arg.channel.need_auth());
 
         if need_login {
             self.login().await?;

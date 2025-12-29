@@ -14,7 +14,7 @@ use thiserror::Error;
 
 use crate::{
     okx::Okx,
-    types::okx::{ResponseMessage, channel::Channel},
+    types::okx::{Args, ResponseMessage, channel::Channel},
 };
 pub type ExchangeResult<T> = Result<T, ExchangeError>;
 
@@ -83,25 +83,30 @@ pub trait ExchangeTrait {
 }
 
 pub async fn init_okx(
-    channels: Vec<Channel>,
+    args: Vec<Args>,
     base_url: String,
     credential: Credential,
 ) -> ExchangeResult<()> {
     let mut ws_streams = HashMap::new();
-    for channel in channels.iter() {
-        let channel_type = channel.channel_type();
-        let channel_url = channel.channel_url(base_url.clone());
+    for arg in args.iter() {
+        let channel_type = arg.channel.channel_type();
+        let channel_url = arg.channel.channel_url(base_url.clone());
         println!("{:?}", channel_url);
         let (ws_stream, _) = tokio_tungstenite::connect_async(channel_url).await?;
         ws_streams.insert(channel_type, ws_stream);
     }
     let (sender, receiver) = flume::unbounded();
-    let mut okx =
-        Okx { credential, subscribe_channel: channels, ws_streams, pipline_sender: sender };
+    let mut okx = Okx { credential, args, ws_streams, pipline_sender: sender };
     okx.subscribe_all().await?;
-    okx.handle_channel_message().await?;
-    while let Ok(msg) = receiver.recv_async().await {
-        println!("{:?}", msg);
-    }
+
+    let handle_message_task = tokio::spawn(async move { okx.handle_channel_message().await });
+
+    let receiver_task = tokio::spawn(async move {
+        while let Ok(msg) = receiver.recv_async().await {
+            println!("{:?}", msg);
+        }
+    });
+
+    let _ = tokio::join!(handle_message_task, receiver_task);
     Ok(())
 }

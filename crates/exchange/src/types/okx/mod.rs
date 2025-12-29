@@ -18,15 +18,15 @@ pub struct RequestMessage<T: Serialize> {
     pub args: Vec<T>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Args {
-    channel: Channel,
-    inst_type: Option<InstrumentType>,
-    inst_family: Option<String>,
-    inst_id: String,
+    pub channel: Channel,
+    pub inst_type: Option<InstrumentType>,
+    pub inst_family: Option<String>,
+    pub inst_id: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum InstrumentType {
     SPOT,
     MARGIN,

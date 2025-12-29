@@ -11,38 +11,31 @@ pub enum Channel {
 
 impl Channel {
     pub fn need_auth(&self) -> bool {
-        match self {
-            Channel::CommonChannel(common_channel) => match common_channel {
-                CommonChannel::FundingRate => false,
-                CommonChannel::PriceLimit => false,
-                CommonChannel::MarkPrice => false,
-                CommonChannel::IndexTickers => false,
-                CommonChannel::SprdPublicTrades => true,
-            },
-            Channel::MarkPriceCandle(_) => true,
-            Channel::IndexCandle(_) => true,
-            Channel::SpreadChannel(_) => true,
+        match self.channel_type() {
+            ChannelType::Business | ChannelType::Private => true,
+            ChannelType::Public => false,
         }
     }
 
     pub fn channel_type(&self) -> ChannelType {
         match self {
-            Channel::CommonChannel(_) => ChannelType::Public,
-            Channel::MarkPriceCandle(_) => ChannelType::Business,
-            Channel::IndexCandle(_) => ChannelType::Business,
-            Channel::SpreadChannel(_) => ChannelType::Business,
+            Channel::CommonChannel(common_channel) => match common_channel {
+                CommonChannel::SprdPublicTrades | CommonChannel::SprdTickers => {
+                    ChannelType::Business
+                }
+                _ => ChannelType::Public,
+            },
+            Channel::MarkPriceCandle(_) | Channel::IndexCandle(_) | Channel::SpreadChannel(_) => {
+                ChannelType::Business
+            }
         }
     }
 
     pub fn channel_url(&self, base_url: String) -> String {
-        match self {
-            Channel::CommonChannel(common_channel) => match common_channel {
-                CommonChannel::SprdPublicTrades => base_url + "/ws/v5/business",
-                _ => base_url + "/ws/v5/business",
-            },
-            Channel::MarkPriceCandle(_) => base_url + "/ws/v5/business",
-            Channel::IndexCandle(_) => base_url + "/ws/v5/business",
-            Channel::SpreadChannel(_) => base_url + "/ws/v5/business",
+        match self.channel_type() {
+            ChannelType::Business => base_url + "/ws/v5/business",
+            ChannelType::Private => base_url + "/ws/v5/private",
+            ChannelType::Public => base_url + "/ws/v5/public"
         }
     }
 }
@@ -56,6 +49,7 @@ pub enum CommonChannel {
     MarkPrice,
     IndexTickers,
     SprdPublicTrades,
+    SprdTickers,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]

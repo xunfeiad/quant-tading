@@ -28,7 +28,9 @@ pub struct Args {
     pub inst_type: Option<InstrumentType>,
     #[serde(rename = "instFamily", skip_serializing_if = "Option::is_none")]
     pub inst_family: Option<String>,
+    #[serde(rename = "instId", skip_serializing_if = "Option::is_none")]
     pub inst_id: Option<String>,
+    #[serde(rename = "sprdId", skip_serializing_if = "Option::is_none")]
     pub sprd_id: Option<String>,
 }
 
@@ -50,6 +52,16 @@ impl Args {
             inst_family: None,
             sprd_id: Some(sprd_id),
             inst_id: None,
+        }
+    }
+
+    pub fn new_spread_channel(channel: channel::SpreadChannel, sprd_id: String) -> Self {
+        Self {
+            channel: Channel::SpreadChannel(channel),
+            inst_type: None,
+            inst_family: None,
+            inst_id: None,
+            sprd_id: Some(sprd_id),
         }
     }
 }

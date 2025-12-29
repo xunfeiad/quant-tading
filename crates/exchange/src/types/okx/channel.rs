@@ -6,6 +6,7 @@ pub enum Channel {
     CommonChannel(CommonChannel),
     MarkPriceCandle(MarkPriceCandle),
     IndexCandle(IndexCandle),
+    SpreadChannel(SpreadChannel),
 }
 
 impl Channel {
@@ -20,6 +21,7 @@ impl Channel {
             },
             Channel::MarkPriceCandle(_) => true,
             Channel::IndexCandle(_) => true,
+            Channel::SpreadChannel(_) => true,
         }
     }
 
@@ -28,21 +30,19 @@ impl Channel {
             Channel::CommonChannel(_) => ChannelType::Public,
             Channel::MarkPriceCandle(_) => ChannelType::Business,
             Channel::IndexCandle(_) => ChannelType::Business,
+            Channel::SpreadChannel(_) => ChannelType::Business,
         }
     }
 
     pub fn channel_url(&self, base_url: String) -> String {
         match self {
-            Channel::CommonChannel(common_channel) =>{
-                match common_channel{
-                    CommonChannel::SprdPublicTrades => {
-                        base_url + "/ws/v5/business"
-                    },
-                    _ => base_url + "/ws/v5/business"
-                }
+            Channel::CommonChannel(common_channel) => match common_channel {
+                CommonChannel::SprdPublicTrades => base_url + "/ws/v5/business",
+                _ => base_url + "/ws/v5/business",
             },
             Channel::MarkPriceCandle(_) => base_url + "/ws/v5/business",
             Channel::IndexCandle(_) => base_url + "/ws/v5/business",
+            Channel::SpreadChannel(_) => base_url + "/ws/v5/business",
         }
     }
 }
@@ -56,6 +56,15 @@ pub enum CommonChannel {
     MarkPrice,
     IndexTickers,
     SprdPublicTrades,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+#[serde(rename_all = "kebab-case")]
+pub enum SpreadChannel {
+    #[default]
+    SprdBboTbt,
+    SprdBooks5,
+    SprdBooksL2Tbt,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

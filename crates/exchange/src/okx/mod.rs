@@ -1,18 +1,21 @@
 use std::collections::HashMap;
 
-use crate::types::okx::channel::ChannelType;
-use crate::types::okx::{Args, RequestMessage, ResponseMessage};
 use crate::{
     Credential, ExchangeError, ExchangeResult, ExchangeTrait, SubscribeChannel,
-    types::okx::{LoginArgs, Operation, channel::Channel},
+    types::okx::{
+        Args, LoginArgs, Operation, RequestMessage, ResponseMessage,
+        channel::{Channel, ChannelType},
+    },
 };
 use async_trait::async_trait;
 use bytes::Bytes;
 use flume::Sender;
 use futures_util::{SinkExt, StreamExt};
 use reqwest::Method;
-use tokio_tungstenite::tungstenite::Utf8Bytes;
-use tokio_tungstenite::{MaybeTlsStream, WebSocketStream, tungstenite::protocol::Message};
+use tokio_tungstenite::{
+    MaybeTlsStream, WebSocketStream,
+    tungstenite::{Utf8Bytes, protocol::Message},
+};
 use tracing::{debug, error, warn};
 
 type WsStream = WebSocketStream<MaybeTlsStream<tokio::net::TcpStream>>;

@@ -43,47 +43,59 @@ impl Okx {
     }
 
     async fn handle_message(
-        mut ws_stream: WsStream,
+        ws_stream: WsStream,
         sender: Sender<ResponseMessage>,
     ) -> ExchangeResult<()> {
         let (mut ws_writer, mut ws_reader) = ws_stream.split();
-        let resp = match ws_reader.next().await {
-            Some(Ok(message)) => {
-                match message {
-                    Message::Text(text) => serde_json::from_str(&text).map_err(|e| {
+
+        while let Some(message) = ws_reader.next().await {
+            let resp = match message {
+                Ok(Message::Text(text)) => {
+                    debug!("Received: {}", text);
+                    serde_json::from_str(&text).map_err(|e| {
                         ExchangeError::Custom(format!("Failed to parse message: {}", e))
-                    }),
-                    Message::Pong(_) => {
-                        debug!("Received pong");
-                        Ok(ResponseMessage {
-                            event: Some(Operation::Pong),
-                            code: Some("0".to_string()),
-                            // conn_id: Some(self.connection_id.clone()),
-                            ..Default::default()
-                        })
-                    }
-                    Message::Ping(_) => {
-                        debug!("Received ping, sending pong");
-                        // 对于ping消息，我们直接返回一个pong响应
-                        ws_writer.send(Message::Pong(Bytes::new())).await?;
-                        Ok(ResponseMessage {
-                            event: Some(Operation::Pong),
-                            code: Some("0".to_string()),
-                            ..Default::default()
-                        })
-                    }
-                    Message::Close(_) => {
-                        warn!("WebSocket connection closed by server");
-                        Err(ExchangeError::Custom("WebSocket connection closed".into()))
-                    }
-                    _ => Err(ExchangeError::Custom("Unsupported message type".into())),
+                    })
+                }
+                Ok(Message::Pong(_)) => {
+                    debug!("Received pong");
+                    Ok(ResponseMessage {
+                        event: Some(Operation::Pong),
+                        code: Some("0".to_string()),
+                        ..Default::default()
+                    })
+                }
+                Ok(Message::Ping(_)) => {
+                    debug!("Received ping, sending pong");
+                    ws_writer.send(Message::Pong(Bytes::new())).await?;
+                    Ok(ResponseMessage {
+                        event: Some(Operation::Pong),
+                        code: Some("0".to_string()),
+                        ..Default::default()
+                    })
+                }
+                Ok(Message::Close(_)) => {
+                    warn!("WebSocket connection closed by server");
+                    break; // 连接关闭，退出循环
+                }
+                Ok(_) => {
+                    debug!("Received unsupported message type");
+                    continue; // 跳过不支持的消息类型
+                }
+                Err(e) => {
+                    error!("WebSocket error: {}", e);
+                    Err(ExchangeError::Custom(format!("WebSocket error: {}", e)))
+                }
+            };
+
+            if let Ok(response) = resp {
+                if let Err(e) = sender.send_async(response).await {
+                    error!("Failed to send message: {}", e);
+                    break;
                 }
             }
-            Some(Err(e)) => Err(ExchangeError::Custom(format!("WebSocket error: {}", e))),
-            None => Err(ExchangeError::Custom("WebSocket connection closed".into())),
-        };
+        }
 
-        sender.send_async(resp?).await?;
+        warn!("WebSocket message loop ended");
         Ok(())
     }
 }

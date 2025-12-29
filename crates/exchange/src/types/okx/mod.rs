@@ -21,8 +21,11 @@ pub struct RequestMessage<T: Serialize> {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Args {
     pub channel: Channel,
+    #[serde(rename = "insType", skip_serializing_if = "Option::is_none")]
     pub inst_type: Option<InstrumentType>,
+    #[serde(rename = "instFamily", skip_serializing_if = "Option::is_none")]
     pub inst_family: Option<String>,
+    #[serde(rename = "instId")]
     pub inst_id: String,
 }
 

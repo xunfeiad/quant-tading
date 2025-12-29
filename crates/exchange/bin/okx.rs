@@ -8,7 +8,7 @@ async fn main() {
         channel: Channel::MarkPriceCandle(
             exchange::types::okx::channel::MarkPriceCandle::MarkPriceCandle12H,
         ),
-        inst_id: "BTC-USD-SWAP".to_string(),
+        inst_id: "SOL-USD-SWAP".to_string(),
         inst_type: None,
         inst_family: None,
     }];

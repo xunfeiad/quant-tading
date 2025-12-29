@@ -15,6 +15,7 @@ impl Channel {
                 CommonChannel::PriceLimit => false,
                 CommonChannel::MarkPrice => false,
                 CommonChannel::IndexTickers => false,
+                CommonChannel::SprdPublicTrades => true,
             },
             Channel::MarkPriceCandle(_) => true,
             Channel::IndexCandle(_) => true,
@@ -38,12 +39,15 @@ impl Channel {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+#[serde(rename_all = "kebab-case")]
 pub enum CommonChannel {
+    #[default]
     FundingRate,
     PriceLimit,
     MarkPrice,
     IndexTickers,
+    SprdPublicTrades,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]

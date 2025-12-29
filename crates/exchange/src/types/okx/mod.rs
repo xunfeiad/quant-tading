@@ -2,6 +2,8 @@ pub mod channel;
 use channel::Channel;
 use serde::{Deserialize, Serialize};
 
+use crate::types::okx::channel::MarkPriceCandle;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct LoginArgs {
     #[serde(rename = "apiKey")]
@@ -19,11 +21,35 @@ pub struct RequestMessage<T: Serialize> {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct Args {
     pub channel: Channel,
     pub inst_type: Option<InstrumentType>,
     pub inst_family: Option<String>,
-    pub inst_id: String,
+    pub inst_id: Option<String>,
+    pub sprd_id: Option<String>,
+}
+
+impl Args {
+    pub fn new_mark_price(mark_price_candle: MarkPriceCandle, inst_id: String) -> Self {
+        Self {
+            channel: Channel::MarkPriceCandle(mark_price_candle),
+            inst_type: Some(InstrumentType::SPOT),
+            inst_id: Some(inst_id),
+            inst_family: None,
+            sprd_id: None,
+        }
+    }
+
+    pub fn new_sprd_public_trades(sprd_id: String) -> Self {
+        Self {
+            channel: Channel::CommonChannel(channel::CommonChannel::SprdPublicTrades),
+            inst_type: Some(InstrumentType::SPOT),
+            inst_family: None,
+            sprd_id: Some(sprd_id),
+            inst_id: None,
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

@@ -91,7 +91,6 @@ pub async fn init_okx(
     for arg in args.iter() {
         let channel_type = arg.channel.channel_type();
         let channel_url = arg.channel.channel_url(base_url.clone());
-        println!("{:?}", channel_url);
         let (ws_stream, _) = tokio_tungstenite::connect_async(channel_url).await?;
         ws_streams.insert(channel_type, ws_stream);
     }
@@ -109,4 +108,15 @@ pub async fn init_okx(
 
     let _ = tokio::join!(handle_message_task, receiver_task);
     Ok(())
+}
+
+pub struct MarketPriceData {
+    pub symbol: String,
+    pub ts: u64,
+    pub open: f64,
+    pub close: f64,
+    pub high: f64,
+    pub low: f64,
+    pub volume: Option<f64>,
+    pub exchange: String,
 }

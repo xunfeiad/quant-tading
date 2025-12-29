@@ -24,7 +24,9 @@ pub struct RequestMessage<T: Serialize> {
 #[serde(rename_all = "camelCase")]
 pub struct Args {
     pub channel: Channel,
+    #[serde(rename = "insType", skip_serializing_if = "Option::is_none")]
     pub inst_type: Option<InstrumentType>,
+    #[serde(rename = "instFamily", skip_serializing_if = "Option::is_none")]
     pub inst_family: Option<String>,
     pub inst_id: Option<String>,
     pub sprd_id: Option<String>,

@@ -75,6 +75,19 @@ impl Args {
             sprd_id: Some(sprd_id),
         }
     }
+
+    pub fn new_spread_candle_channel(
+        spread_candle: channel::SpreadCandle,
+        sprd_id: String,
+    ) -> Self {
+        Self {
+            channel: Channel::SpreadCandle(spread_candle),
+            inst_type: None,
+            inst_family: None,
+            inst_id: None,
+            sprd_id: Some(sprd_id),
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

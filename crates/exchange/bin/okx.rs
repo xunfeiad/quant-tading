@@ -2,7 +2,7 @@ use exchange::{
     Credential,
     types::okx::{
         Args,
-        channel::{MarkPriceCandle, SpreadChannel},
+        channel::{MarkPriceCandle, SpreadCandle, SpreadChannel},
     },
 };
 #[tokio::main]
@@ -15,6 +15,10 @@ async fn main() {
             "SOL-USDT_SOL-USDT-SWAP".to_string(),
         ),
         Args::new_spread_ticker_channel("SOL-USDT_SOL-USDT-SWAP".to_string()),
+        Args::new_spread_candle_channel(
+            SpreadCandle::SprdCandle1m,
+            "SOL-USDT_SOL-USDT-SWAP".to_string(),
+        ),
     ];
     let base_url = "wss://ws.okx.com:8443".to_string();
 

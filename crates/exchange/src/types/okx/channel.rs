@@ -7,6 +7,7 @@ pub enum Channel {
     MarkPriceCandle(MarkPriceCandle),
     IndexCandle(IndexCandle),
     SpreadChannel(SpreadChannel),
+    SpreadCandle(SpreadCandle),
 }
 
 impl Channel {
@@ -25,9 +26,10 @@ impl Channel {
                 }
                 _ => ChannelType::Public,
             },
-            Channel::MarkPriceCandle(_) | Channel::IndexCandle(_) | Channel::SpreadChannel(_) => {
-                ChannelType::Business
-            }
+            Channel::MarkPriceCandle(_)
+            | Channel::IndexCandle(_)
+            | Channel::SpreadChannel(_)
+            | Channel::SpreadCandle(_) => ChannelType::Business,
         }
     }
 
@@ -184,4 +186,63 @@ pub enum ChannelType {
     Public,
     Private,
     Business,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum SpreadCandle {
+    // 常规时间频道
+    #[serde(rename = "sprd-candle3M")]
+    SprdCandle3M,
+    #[serde(rename = "sprd-candle1M")]
+    SprdCandle1M,
+    #[serde(rename = "sprd-candle1W")]
+    SprdCandle1W,
+    #[serde(rename = "sprd-candle1D")]
+    SprdCandle1D,
+    #[serde(rename = "sprd-candle2D")]
+    SprdCandle2D,
+    #[serde(rename = "sprd-candle3D")]
+    SprdCandle3D,
+    #[serde(rename = "sprd-candle5D")]
+    SprdCandle5D,
+    #[serde(rename = "sprd-candle12H")]
+    SprdCandle12H,
+    #[serde(rename = "sprd-candle6H")]
+    SprdCandle6H,
+    #[serde(rename = "sprd-candle4H")]
+    SprdCandle4H,
+    #[serde(rename = "sprd-candle2H")]
+    SprdCandle2H,
+    #[serde(rename = "sprd-candle1H")]
+    SprdCandle1H,
+    #[serde(rename = "sprd-candle30m")]
+    SprdCandle30m,
+    #[serde(rename = "sprd-candle15m")]
+    SprdCandle15m,
+    #[serde(rename = "sprd-candle5m")]
+    SprdCandle5m,
+    #[serde(rename = "sprd-candle3m")]
+    SprdCandle3m,
+    #[serde(rename = "sprd-candle1m")]
+    SprdCandle1m,
+
+    // UTC时间频道
+    #[serde(rename = "sprd-candle3Mutc")]
+    SprdCandle3MUtc,
+    #[serde(rename = "sprd-candle1Mutc")]
+    SprdCandle1MUtc,
+    #[serde(rename = "sprd-candle1Wutc")]
+    SprdCandle1WUtc,
+    #[serde(rename = "sprd-candle1Dutc")]
+    SprdCandle1DUtc,
+    #[serde(rename = "sprd-candle2Dutc")]
+    SprdCandle2DUtc,
+    #[serde(rename = "sprd-candle3Dutc")]
+    SprdCandle3DUtc,
+    #[serde(rename = "sprd-candle5Dutc")]
+    SprdCandle5DUtc,
+    #[serde(rename = "sprd-candle12Hutc")]
+    SprdCandle12HUtc,
+    #[serde(rename = "sprd-candle6Hutc")]
+    SprdCandle6HUtc,
 }
